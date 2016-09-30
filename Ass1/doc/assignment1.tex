@@ -1,8 +1,9 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 \usepackage{gensymb}
+\usepackage{graphicx}
+\usepackage{parskip}
 
-\setlength{\parindent}{0pt}
 
 \title{GNSS: Single Point Position Estimation \\
 	   \normalsize{TTK5 Lab 1}}
@@ -15,14 +16,35 @@
 
 \section*{Task 1}
 
-When measuring movement and position on earth, two separate measurements is needed. For measuring movement Inertial Measurement Unit (IMU) systems are usially used. These units are attached to the object being measured, and measures all forces "affecting" the object in the Newton law of motion way. When measuring postion, Global Navigation Satelite Systems (GNSS) is the most common way. With GNSS satelites orbiting the earth is used to measure position, and the distances between the object and the satelites are so big that the Newton's law of motion no longer apply. In order to combine these two measurements different coordinate systems is used. *IS THIS PARAGRAPH REALLY NECESSARY?*\\
+When measuring movement and position on earth, two separate measurements is needed. For measuring movement Inertial Measurement Unit (IMU) systems are usially used. These units are attached to the object being measured, and measures all forces "affecting" the object in the Newton law of motion way. When measuring postion, Global Navigation Satelite Systems (GNSS) is the most common way. With GNSS satelites orbiting the earth is used to measure position, and the distances between the object and the satelites are so big that the Newton's law of motion no longer apply. In order to combine these two measurements different coordinate systems is used. *IS THIS PARAGRAPH REALLY NECESSARY?*
 
-East North Up (ENU) is a reference frame fixed to the earth surface. Its x-axis points east, y-axis points north and its z-axis points upwards perpendicular to the earth surface. The orign of the fram is on the earth surface, and it uses a reference ellipsiode to describe the earth's curvature.\\
+East North Up (ENU) is a reference frame fixed to the earth surface. Its x-axis points east, y-axis points north and its z-axis points upwards perpendicular to the earth surface. The orign of the fram is on the earth surface, and it uses a reference ellipsiode to describe the earth's curvature.
 
 The Earth Centered Earth Fixed (ECEF) reference frame does not have its origin on the earth surface. The origin is in the center of the earth where the x-axis points to the intersection of the 0$\degree$ longitude and latitude, z-axis points to the geographic north along the rotation axis and the y-axis is palced perpendicular to the x- and z-axis. The frame rotates with the earth. When using this frame to describe a postion on the earth surface (or relatively close) longitudenal and latitudinal coordinates are used together with height. For describing objects further away from the surface, like satelites, cartesian coordinates are used.
 
 
+\section*{Task 3}
+The Dilution of Precision (DOP) is a number that tells you how good estimates of your position the receiver can make. By using the standard deviation of the pseudorange measurements from all the satellites that are being used to calculate position it is possible to get a DOP number that tells how good the receiver can estimate position, and horizontal and vertical position. The DOP can also tell how good the geometrical spreading of the satellites is (satellites further away from each other is better than satellites close to each other). The DOP is a nonnegative number where less than 1 is ideal, but numbers below 5 is acceptable.
 
+\begin{figure}[!ht]
+    \centering
+    \makebox[\textwidth][c]{\includegraphics[width=1\textwidth, keepaspectratio=true]{../src/dop.eps}}
+    \caption{Dilution of Precision (DOP) values for the GPS measurement}
+    \label{fig:dop}
+\end{figure}
+
+Figure \ref{fig:dop} shows the different DOP values for the given measurement. In general, the DOP values are very good with none of the exceeding $1.8$. The best is the time DOP never exceeding $0.8$ which means that the receiver can accurately estimate the time error. The horizontal and vertical DOPs are also very good, and they are both better than the position DOP. This is simply because the PDOP is the HDOP and VDOP added together. This also explains why the geometric DOP has the highest value, since it is the result of all the other DOPs added together.
+
+\begin{figure}[!ht]
+    \centering
+    \makebox[\textwidth][c]{\includegraphics[width=1\textwidth, keepaspectratio=true]{../src/dop_no_satellites.eps}}
+    \caption{Dilution of Precision (DOP) values for the GPS measurement}
+    \label{fig:no_satellites}
+\end{figure}
+
+The most interesting result that can be seen from the DOPs is that they all improve a bit at approximately 1800, improve even a bit more at approximately 2400, before they get worse at 4000. This can be explained with how many satellites is visible at the given time, which is shown in figure \ref{fig:no_satellites}. From the figure it can be seen that at the same time as the DOP values decrease there is an increase in the number of visible satellites, and opposite when the DOPs increase.
+
+The VDOP distinguishes itself from the rest of the values as it tend to increase over the course of the measurement. This leads to that the VDOP is worse at the end of the measurement than it was at the beginning, even though more satellites are visible. This most likely has to do with the position of the satellites. The receiver is able to more accurately estimate the vertical position when the satellites has a low elevation. Since the VDOP increases during the measurement, it is likely that the visible satellites moves to positions with higher elevation during the measurement.
 
 
 
