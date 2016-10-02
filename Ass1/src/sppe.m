@@ -44,10 +44,12 @@ for t = 1:7200
              ones(no_visible,1)];
 
         % Calculate covariance matrix
-        std_deviation = std(P_delta_log(:));
+        %std_deviation = std(P_delta_log(:,:));
+        std_deviation = 20;
         R = diag(std_deviation.^2 .* (1./(sind(visible_el).^2)));
          
         % Determine the offset delta_x
+        %x_delta = inv(G'*inv(R)*G) * G' * inv(R) * P_delta';
         x_delta = inv(G'*G) * G' * P_delta';
         x = x + x_delta;
     end
@@ -56,30 +58,33 @@ end
 
 % Transform from ECEF to ENU
 wgs84 = wgs84Ellipsoid;
-lla = ecef2lla(x_log')';
-[xEast, yNorth, zUp] = ecef2enu(x_log(1,:),x_log(2,:),x_log(3,:), ...
-                                lla(1,:), lla(2,:), lla(3,:), wgs84);
+
 lla_pos = ecef2lla(P0');
 [xP0, yP0, zP0] = ecef2enu(P0(1), P0(2), P0(3), ...
                            lla_pos(1), lla_pos(2), lla_pos(3), wgs84);
 
+lla = ecef2lla(x_log')';
+[xEast, yNorth, zUp] = ecef2enu(x_log(1,:),x_log(2,:),x_log(3,:), ...
+                                lla_pos(1), lla_pos(2), lla_pos(3), wgs84);
+
+                       
 % Plot position error in East, North and Vertical frame
 figure(1);
-%hold on;
-grid on;
 plot((xEast - xP0));
+grid on;
+title('Position error, east')
 
 figure(2);
-grid on;
 plot((yNorth - yP0));
+grid on;
+title('Position error, north')
 
 figure(3);
-grid on
 plot((zUp - zP0));
-%legend('East error', 'North error');
+grid on;
+title('Position error, up')
 
-%scatter3(x(1),x(2),x(3))
-%hold on
-%scatter(x_log(1,:),x_log(2,:))
-%scatter(P0(1), P0(2),'r')
-%scatter(x(1),x(2),'b')
+figure(4)
+scatter(xP0,yP0,'b')
+hold on
+scatter(xEast(7200),yNorth(7200),'r')
