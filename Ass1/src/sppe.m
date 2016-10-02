@@ -67,24 +67,30 @@ lla = ecef2lla(x_log')';
 [xEast, yNorth, zUp] = ecef2enu(x_log(1,:),x_log(2,:),x_log(3,:), ...
                                 lla_pos(1), lla_pos(2), lla_pos(3), wgs84);
 
-                       
+time_vector = (Tow-Tow(1)).*0.5;                       
 % Plot position error in East, North and Vertical frame
 figure(1);
-plot((xEast - xP0));
+plot(time_vector, (xEast - xP0));
 grid on;
 title('Position error, east')
+ylabel('[m]')
+xlabel('[s]')
 
 figure(2);
 plot((yNorth - yP0));
 grid on;
 title('Position error, north')
+ylabel('[m]')
+xlabel('[s]')
 
 figure(3);
 plot((zUp - zP0));
 grid on;
 title('Position error, up')
+ylabel('[m]')
+xlabel('[s]')
 
-figure(4)
-scatter(xP0,yP0,'b')
-hold on
-scatter(xEast(7200),yNorth(7200),'r')
+%figure(4)
+%scatter(xP0,yP0,'b')
+%hold on
+%scatter(xEast(7200),yNorth(7200),'r')
