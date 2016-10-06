@@ -16,11 +16,32 @@
 
 \section*{Task 1}
 
-When measuring movement and position on earth, two separate measurements is needed. For measuring movement Inertial Measurement Unit (IMU) systems are usially used. These units are attached to the object being measured, and measures all forces "affecting" the object in the Newton law of motion way. When measuring postion, Global Navigation Satelite Systems (GNSS) is the most common way. With GNSS satelites orbiting the earth is used to measure position, and the distances between the object and the satelites are so big that the Newton's law of motion no longer apply. In order to combine these two measurements different coordinate systems is used. *IS THIS PARAGRAPH REALLY NECESSARY?*
+East North Up (ENU) is a reference frame fixed to the earth surface. Its x-axis points east, y-axis points north and its z-axis points upwards perpendicular to the earth surface. The orign of the frame is on the earth surface relatively close to the object itself. For this reason it is often referred to as a local frame, since it describes the objects position in what can be called a small, limited area. Since the origin is located at the earth surface, the earths curvature must be taken into consideration. This is done by using a reference ellipsoid. The standard ellipsoid for GPS is the WGS-84.
 
-East North Up (ENU) is a reference frame fixed to the earth surface. Its x-axis points east, y-axis points north and its z-axis points upwards perpendicular to the earth surface. The orign of the fram is on the earth surface, and it uses a reference ellipsiode to describe the earth's curvature.
+The Earth Centered Earth Fixed (ECEF) reference frame does not have its origin on the earth surface. The origin is in the center of the earth where the x-axis points to the intersection of the 0$\degree$ longitude and latitude, z-axis points to the geographic north along the rotation axis and the y-axis is placed perpendicular to the x- and z-axis. The frame rotates with the earth. When using this frame to describe a postion on the earth surface (or relatively close) longitudenal and latitudinal coordinates are used together with height. For describing objects further away from the surface, like satellites, cartesian coordinates are used.
 
-The Earth Centered Earth Fixed (ECEF) reference frame does not have its origin on the earth surface. The origin is in the center of the earth where the x-axis points to the intersection of the 0$\degree$ longitude and latitude, z-axis points to the geographic north along the rotation axis and the y-axis is palced perpendicular to the x- and z-axis. The frame rotates with the earth. When using this frame to describe a postion on the earth surface (or relatively close) longitudenal and latitudinal coordinates are used together with height. For describing objects further away from the surface, like satelites, cartesian coordinates are used.
+The two coordinate systems have different usages. Since the ECEF coordinate system rotates with the earth, it is not an inertial coordinate frame. This means that Newton's law of motion cannot be used in this frame. However, it is used to describe the position of objects when the distances are large (i.e. position on earth). For small distances, and when one needs to use Newton's law of motion for an object, ENU is used. Switching between these two coordinate systems is pretty straight forward, which makes it possible to describe an objects motion using the ENU frame, and its position using the ECEF frame. This is very useful when controlling for example a ship or aircraft that moves over large distances.
+
+
+\section*{Task 2}
+
+Figure \ref{fig:pos_err} shows the position error in the east, north, up (ENU) local frame. It shows that the error in the east and north frame is about the same value. The error in the north position is varying about zero, while the error in the east position is a bit more off in the beginning. However, the error in the east position stabilizes towards the end. The position error in the vertical frame up tends to get worse during the timeseries, and for the most part of the measurement is is varying about 10 meters.
+
+\begin{figure}[!ht]
+    \centering
+    \makebox[\textwidth][c]{\includegraphics[width=1.25\textwidth, keepaspectratio=true]{../src/error_pos.eps}}
+    \caption{Position error in the east, north and vertical frame.}
+    \label{fig:pos_err}
+\end{figure}
+
+\begin{figure}[!ht]
+    \centering
+    \makebox[\textwidth][c]{\includegraphics[width=1.25\textwidth, keepaspectratio=true]{../src/std_pos.eps}}
+    \caption{Standard deviation of the estimated position in the east, north and vertical frame.}
+    \label{fig:pos_std}
+\end{figure}
+
+Figure \ref{fig:pos_std} shows the standard devation of the estimated position in the ENU local frame. *FIGURE OUT WHAT STANDARD DEVIATION IS*
 
 
 \section*{Task 3}
@@ -45,7 +66,6 @@ Figure \ref{fig:dop} shows the different DOP values for the given measurement. I
 The most interesting result that can be seen from the DOPs is that they all improve a bit at approximately 1800, improve even a bit more at approximately 2400, before they get worse at 4000. This can be explained with how many satellites is visible at the given time, which is shown in figure \ref{fig:no_satellites}. From the figure it can be seen that at the same time as the DOP values decrease there is an increase in the number of visible satellites, and opposite when the DOPs increase.
 
 The VDOP distinguishes itself from the rest of the values as it tend to increase over the course of the measurement. This leads to that the VDOP is worse at the end of the measurement than it was at the beginning, even though more satellites are visible. This most likely has to do with the position of the satellites. The receiver is able to more accurately estimate the vertical position when the satellites has a low elevation. Since the VDOP increases during the measurement, it is likely that the visible satellites moves to positions with higher elevation during the measurement.
-
 
 
 
