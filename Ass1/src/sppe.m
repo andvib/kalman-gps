@@ -50,10 +50,9 @@ for t = 1:7200
         % Determine the offset delta_x
         x_delta = inv(G'*inv(R)*G) * G' * inv(R) * P_delta';
         
-        x = x + x_delta;
+        x = x + x_delta;        
     end
-    
-    dop_log = [dop_log, sqrt(G(1,1) + G(2,2) + G(3,3))]; 
+
     x_log = [x_log, x(1:3)];
 end
 
@@ -64,75 +63,59 @@ lla_pos = ecef2lla(P0');
 [xP0, yP0, zP0] = ecef2enu(P0(1), P0(2), P0(3), ...
                            lla_pos(1), lla_pos(2), lla_pos(3), wgs84);
 
-lla = ecef2lla(x_log')';
 [xEast, yNorth, zUp] = ecef2enu(x_log(1,:),x_log(2,:),x_log(3,:), ...
                                 lla_pos(1), lla_pos(2), lla_pos(3), wgs84);
 
 %% Plot position error in East, North and Vertical frame
 time_vector = (Tow-Tow(1));
-
+% 
 % figure(1);
 % subplot(3,1,1);
-% plot(time_vector, (xEast - xP0));
+% plot(time_vector, abs(xEast - xP0));
 % grid on;
 % title('Position error, east');
 % ylabel('[m]');
 % xlabel('[s]');
 % 
 % subplot(3,1,2);
-% plot(time_vector, (yNorth - yP0));
+% plot(time_vector, abs(yNorth - yP0));
 % grid on;
 % title('Position error, north');
 % ylabel('[m]');
 % xlabel('[s]');
 % 
 % subplot(3,1,3);
-% plot(time_vector, (zUp - zP0));
+% plot(time_vector, abs(zUp - zP0));
 % grid on;
 % title('Position error, up');
 % ylabel('[m]');
 % xlabel('[s]');
-% 
-% saveas(gcf, 'error_pos', 'epsc');
+
+figure(1);
+hold on;
+plot(time_vector, abs(xEast - xP0));
+plot(time_vector, abs(yNorth - yP0));
+plot(time_vector, abs(zUp - zP0));
+grid on;
+legend('East', 'North', 'Up');
+saveas(gcf, 'error_pos', 'epsc');
 
 %% Plot the std of the estimated position
 xEast_std = [];
+yNorth_std = [];
+zUp_std = [];
 for i = 1:length(xEast)
     xEast_std = [xEast_std, std(xEast(1:i))];
+    yNorth_std = [yNorth_std, std(yNorth(1:i))];
+    zUp_std = [zUp_std, std(zUp(1:i))];
 end
 
-output = smooth(time_vector, xEast, 0.2, 'rloess');
+figure(3);
+hold on;
+plot(xEast_std);
+plot(yNorth_std);
+plot(zUp_std);
+grid on;
+legend('East', 'North', 'Up', 'Location','northeastoutside');
 
-% figure(3)
-% plot(xEast);
-% hold on;
-% plot(output);
-% plot(output' + xEast_std);
-% plot(output' - xEast_std);
-% grid on;
-% 
-% figure(4)
-% plot(xEast_std)
-% grid on;
-                
-% figure(2);
-% subplot(3,1,1);
-% xEast_std = std(xEast);
-% plot(time_vector, xEast_std);
-% grid on;
-% title('Standard deviation of the estimated position, east');
-% 
-% subplot(3,1,2);
-% yNorth_std = std(yNorth);
-% plot(time_vector, yNorth);
-% grid on;
-% title('Standard deviation of the estimated position, north');
-% ylabel('Standard deviation [??]');
-% 
-% subplot(3,1,3);
-% zUp_std = std(zUp);
-% plot(time_vector, zUp);
-% grid on;
-% title('Standard deviation of the estimated position, up');
-% xlabel('Time [s]');
-% saveas(gcf, 'std_pos', 'epsc');
+saveas(gcf, 'std_pos', 'epsc');
