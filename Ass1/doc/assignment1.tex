@@ -4,15 +4,34 @@
 \usepackage{graphicx}
 \usepackage{parskip}
 
-
-\title{GNSS: Single Point Position Estimation \\
-	   \normalsize{TTK5 Lab 1}}
-\author{Andreas Nordby Vibeto}
-\date{October 2016}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
 
 \begin{document}
 
-\maketitle
+\pagenumbering{gobble}
+
+\begin{center}
+
+\HRule \\[0.4cm]
+{ \huge \bfseries Lab 1: GNSS Single Point Precision Estimation \\[0.4cm] 
+\Large \bfseries TTK5: Kalman Filtering and Navigation \\[0.4cm] } 
+
+\HRule \\[1.5cm]
+
+\begin{center} \large
+\emph{By:}\\
+\textbf{Andreas Nordby Vibeto}\\
+andvibeto@gmail.com \\
+(andreanv@stud.ntnu.no)
+\end{center}
+
+\vfill
+
+{\large \today}
+
+\end{center}
+\newpage
+\pagenumbering{arabic}
 
 \section*{Task 1}
 
@@ -25,7 +44,7 @@ The two coordinate systems have different usages. Since the ECEF coordinate syst
 
 \section*{Task 2}
 
-Figure \ref{fig:pos_err} shows the position error in the east, north, up (ENU) local frame. It shows that the error in the east and north frame is about the same value. The error in the north position is varying about zero, while the error in the east position is a bit more off in the beginning. However, the error in the east position stabilizes towards the end. The position error in the vertical frame up tends to get worse during the timeseries, and for the most part of the measurement is is varying about 10 meters.
+Figure \ref{fig:pos_err} shows the position error in the east, north, up (ENU) local frame. It shows that the error in the east and north frame is about the same value. The error in the north position stays close to zero throughout the measurement, while the error in the east position is a bit more off in the beginning but stabilizes towards the end. The position error in the vertical frame up tends to get worse during the timeseries, and for the most part of the measurement is is varying about 10 meters.
 
 \begin{figure}[!ht]
     \centering
@@ -41,11 +60,15 @@ Figure \ref{fig:pos_err} shows the position error in the east, north, up (ENU) l
     \label{fig:pos_std}
 \end{figure}
 
-Figure \ref{fig:pos_std} shows the standard devation of the estimated position in the ENU local frame. *FIGURE OUT WHAT STANDARD DEVIATION IS*
+Figure \ref{fig:pos_std} shows the standard devation of the estimated position in the ENU local frame. The standard deviation in east and north direction stays at about $0.4$. In the up direction however, the standard deviation rises pretty much throughout the measurement and is more than one in the end.
+
+The position is calculated using single point position estimation, and weighted least squares to weight the measurements. The algorithm begins every time epoch by determining which satellites is visible. After that the algorithm goes through every step of the calculations ten times, before it updates the position and moves on to the next time epoch. For the weighted least squares calculations elevation dependent variance is used. The standard deviation of the observations has been set to $20$ m, as this is a pretty common deviation for cheaper GPS receivers.
+
+The error in Figure \ref{fig:pos_err} shows the error in meters which is the physical error of the estimated position, the accuracy of the estimation. As the figure shows it varies with a high frequency, about one meter, which comes from inaccuracy in the pseudorange measurements. The standard deviation in Figure \ref{fig:pos_std} relates to the preciseness of the position estimation. The preciseness does not relate to a given error in the position, but relates to how spread out the measurements are. The standard deviation doesn't vary as much as the error. This is because it does not relate to physical variable, instead it describes the dataset as a whole.
 
 
 \section*{Task 3}
-The Dilution of Precision (DOP) is a number that tells you how good estimates of your position the receiver can make. By using the standard deviation of the pseudorange measurements from all the satellites that are being used to calculate position it is possible to get a DOP number that tells how good the receiver can estimate position, and horizontal and vertical position. The DOP can also tell how good the geometrical spreading of the satellites is (satellites further away from each other is better than satellites close to each other). The DOP is a nonnegative number where less than 1 is ideal, but numbers below 5 is acceptable.
+The Dilution of Precision (DOP) is a number that tells you how good estimates of your position the receiver can make. By using the standard deviation of the pseudorange measurements from all the satellites that are being used to calculate position it is possible to get a DOP number that tells how good the receiver can estimate position, and horizontal and vertical position. The DOP can also tell how good the geometrical spreading of the satellites is (satellites further away from each other is better than satellites close to each other). The DOP is a nonnegative number where less than 1 is ideal, but numbers below 5 is acceptable (https://en.wikipedia.org/wiki/Dilution\_of\_precision\_(navigation)).
 
 \begin{figure}[!ht]
     \centering
@@ -59,27 +82,22 @@ Figure \ref{fig:dop} shows the different DOP values for the given measurement. I
 \begin{figure}[!ht]
     \centering
     \makebox[\textwidth][c]{\includegraphics[width=1\textwidth, keepaspectratio=true]{../src/dop_no_satellites.eps}}
-    \caption{Dilution of Precision (DOP) values for the GPS measurement}
+    \caption{Number of satellites visible throuhgout the measurement.}
     \label{fig:no_satellites}
 \end{figure}
 
-The most interesting result that can be seen from the DOPs is that they all improve a bit at approximately 1800, improve even a bit more at approximately 2400, before they get worse at 4000. This can be explained with how many satellites is visible at the given time, which is shown in figure \ref{fig:no_satellites}. From the figure it can be seen that at the same time as the DOP values decrease there is an increase in the number of visible satellites, and opposite when the DOPs increase.
+The most interesting result that can be seen from the DOPs is that they all improve a bit at approximately 1800, improve even a bit more at approximately $2400$, before they get worse at $4000$. This can be explained with how many satellites is visible at the given time, which is shown in figure \ref{fig:no_satellites}. From the figure it can be seen that at the same time as the DOP values decrease there is an increase in the number of visible satellites, and opposite when the DOPs increase.
 
 The VDOP distinguishes itself from the rest of the values as it tend to increase over the course of the measurement. This leads to that the VDOP is worse at the end of the measurement than it was at the beginning, even though more satellites are visible. This most likely has to do with the position of the satellites. The receiver is able to more accurately estimate the vertical position when the satellites has a low elevation. Since the VDOP increases during the measurement, it is likely that the visible satellites moves to positions with higher elevation during the measurement.
 
-
 \section*{Task 4}
 
-The Space Based Augmentation System (SBAS) helps improving the GPS measurments. It is done by having several ground stations were each of them receives pseudoranges from the satellites. Since the position of the ground stations is known, the ground stations can be used to determine the amount of error in the different satellites. These parameters are transferred to the satellite, which again transfers the parameters to the receivers. This way the receivers can use the error parameters to improve the accuracy of the single point positioning approach.
-
-Another way of improving the single point positioning is by either weighted least sqaures or a Kalman filter. These are both ways of estimating which of the satellites give the most reliable pseudoranges. Weighted least squares can have different implementations, for example it can give more weight to satellites with lover elevation angle as these give the better pseudoranges. The Kalman filter also weighs the measurements based on known facts about the satellites. In addition the Kalman filter needs information on the receiver dynamics, more specific the constant velocity and the constant acceleration.
-
-
-
-
-
-
-
+\begin{itemize}
+	\item Space Based Augmentation System (SBAS)
+	\item Ground Based Augmentation System (GBAS)
+	\item Precise Point Positioning (PPP)
+	\item Real Time Kinematics (RTK)
+\end{itemize}
 
 
 
