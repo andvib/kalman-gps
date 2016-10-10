@@ -3,12 +3,13 @@ clear all;
 
 load('data/data.mat');
 
-% Set initial position estimate
+%% Set initial position estimate
 x0 = [0, 0, 0, 0]';
 x = x0;
 x_log = [];
+dop_log = [];
 
-% Loop through all measurements
+%% Loop through all measurements
 for t = 1:7200
     visible_pos = [];
     visible_pseudo = [];
@@ -41,7 +42,7 @@ for t = 1:7200
              (visible_pos(2,:)' - x(2))./P_hat(:), ...
              (visible_pos(3,:)' - x(3))./P_hat(:), ...
              ones(no_visible,1)];
-
+        
         % Calculate covariance matrix
         std_deviation = 20;
         R = diag(std_deviation.^2 .* (1./(sind(visible_el).^2)));
@@ -51,10 +52,12 @@ for t = 1:7200
         
         x = x + x_delta;
     end
+    
+    dop_log = [dop_log, sqrt(G(1,1) + G(2,2) + G(3,3))]; 
     x_log = [x_log, x(1:3)];
 end
 
-% Transform from ECEF to ENU
+%% Transform from ECEF to ENU
 wgs84 = wgs84Ellipsoid;
 
 lla_pos = ecef2lla(P0');
@@ -65,34 +68,34 @@ lla = ecef2lla(x_log')';
 [xEast, yNorth, zUp] = ecef2enu(x_log(1,:),x_log(2,:),x_log(3,:), ...
                                 lla_pos(1), lla_pos(2), lla_pos(3), wgs84);
 
-% Plot position error in East, North and Vertical frame
+%% Plot position error in East, North and Vertical frame
 time_vector = (Tow-Tow(1));
 
-figure(1);
-subplot(3,1,1);
-plot(time_vector, (xEast - xP0));
-grid on;
-title('Position error, east');
-ylabel('[m]');
-xlabel('[s]');
+% figure(1);
+% subplot(3,1,1);
+% plot(time_vector, (xEast - xP0));
+% grid on;
+% title('Position error, east');
+% ylabel('[m]');
+% xlabel('[s]');
+% 
+% subplot(3,1,2);
+% plot(time_vector, (yNorth - yP0));
+% grid on;
+% title('Position error, north');
+% ylabel('[m]');
+% xlabel('[s]');
+% 
+% subplot(3,1,3);
+% plot(time_vector, (zUp - zP0));
+% grid on;
+% title('Position error, up');
+% ylabel('[m]');
+% xlabel('[s]');
+% 
+% saveas(gcf, 'error_pos', 'epsc');
 
-subplot(3,1,2);
-plot(time_vector, (yNorth - yP0));
-grid on;
-title('Position error, north');
-ylabel('[m]');
-xlabel('[s]');
-
-subplot(3,1,3);
-plot(time_vector, (zUp - zP0));
-grid on;
-title('Position error, up');
-ylabel('[m]');
-xlabel('[s]');
-
-saveas(gcf, 'error_pos', 'epsc');
-
-% Plot the std of the estimated position
+%% Plot the std of the estimated position
 xEast_std = [];
 for i = 1:length(xEast)
     xEast_std = [xEast_std, std(xEast(1:i))];
@@ -100,18 +103,18 @@ end
 
 output = smooth(time_vector, xEast, 0.2, 'rloess');
 
-figure(3)
-plot(xEast);
-hold on;
-plot(output);
-plot(output' + xEast_std);
-plot(output' - xEast_std);
-grid on;
-
-figure(4)
-plot(xEast_std)
-grid on;
-
+% figure(3)
+% plot(xEast);
+% hold on;
+% plot(output);
+% plot(output' + xEast_std);
+% plot(output' - xEast_std);
+% grid on;
+% 
+% figure(4)
+% plot(xEast_std)
+% grid on;
+                
 % figure(2);
 % subplot(3,1,1);
 % xEast_std = std(xEast);

@@ -68,6 +68,11 @@ The most interesting result that can be seen from the DOPs is that they all impr
 The VDOP distinguishes itself from the rest of the values as it tend to increase over the course of the measurement. This leads to that the VDOP is worse at the end of the measurement than it was at the beginning, even though more satellites are visible. This most likely has to do with the position of the satellites. The receiver is able to more accurately estimate the vertical position when the satellites has a low elevation. Since the VDOP increases during the measurement, it is likely that the visible satellites moves to positions with higher elevation during the measurement.
 
 
+\section*{Task 4}
+
+The Space Based Augmentation System (SBAS) helps improving the GPS measurments. It is done by having several ground stations were each of them receives pseudoranges from the satellites. Since the position of the ground stations is known, the ground stations can be used to determine the amount of error in the different satellites. These parameters are transferred to the satellite, which again transfers the parameters to the receivers. This way the receivers can use the error parameters to improve the accuracy of the single point positioning approach.
+
+Another way of improving the single point positioning is by either weighted least sqaures or a Kalman filter. These are both ways of estimating which of the satellites give the most reliable pseudoranges. Weighted least squares can have different implementations, for example it can give more weight to satellites with lover elevation angle as these give the better pseudoranges. The Kalman filter also weighs the measurements based on known facts about the satellites. In addition the Kalman filter needs information on the receiver dynamics, more specific the constant velocity and the constant acceleration.
 
 
 
