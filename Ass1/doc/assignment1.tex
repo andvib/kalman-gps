@@ -62,7 +62,7 @@ Figure \ref{fig:pos_err} shows the position error in the east, north, up (ENU) l
 
 Figure \ref{fig:pos_std} shows the standard devation of the estimated position in the ENU local frame. The standard deviation in east and north direction stays at about $0.4$. In the up direction however, the standard deviation rises pretty much throughout the measurement and is more than one in the end.
 
-The position is calculated using single point position estimation, and weighted least squares to weight the measurements. The algorithm begins every time epoch by determining which satellites is visible. After that the algorithm goes through every step of the calculations ten times, before it updates the position and moves on to the next time epoch. For the weighted least squares calculations elevation dependent variance is used. The standard deviation of the observations has been set to $20$ m, as this is a pretty common deviation for cheaper GPS receivers.
+The position is calculated using single point position estimation, and weighted least squares to weight the measurements. The algorithm begins every time epoch by determining which satellites is visible. After that the algorithm goes through every step of the calculations ten times, before it updates the position and moves on to the next time epoch. For the weighted least squares calculations elevation dependent variance is used. The standard deviation of the observations has been set to $20$ m, as this should be large enough to cover cheaper GPS receivers as well.
 
 The error in Figure \ref{fig:pos_err} shows the error in meters which is the physical error of the estimated position, the accuracy of the estimation. As the figure shows it varies with a high frequency, about one meter, which comes from inaccuracy in the pseudorange measurements. The standard deviation in Figure \ref{fig:pos_std} relates to the preciseness of the position estimation. The preciseness does not relate to a given error in the position, but relates to how spread out the measurements are. The standard deviation doesn't vary as much as the error. This is because it does not relate to physical variable, instead it describes the dataset as a whole.
 
@@ -77,7 +77,7 @@ The Dilution of Precision (DOP) is a number that tells you how good estimates of
     \label{fig:dop}
 \end{figure}
 
-Figure \ref{fig:dop} shows the different DOP values for the given measurement. In general, the DOP values are very good with none of the exceeding $1.8$. The best is the time DOP never exceeding $0.8$ which means that the receiver can accurately estimate the time error. The horizontal and vertical DOPs are also very good, and they are both better than the position DOP. This is simply because the PDOP is the HDOP and VDOP added together. This also explains why the geometric DOP has the highest value, since it is the result of all the other DOPs added together.
+Figure \ref{fig:dop} shows the different DOP values for the given measurement. In general, the DOP values are very good with none of them exceeding $1.8$. The best is the time DOP never exceeding $0.8$ which means that the receiver can accurately estimate the time error. The horizontal and vertical DOPs are also very good, and they are both better than the position DOP. This is simply because the PDOP is the HDOP and VDOP added together. This also explains why the geometric DOP has the highest value, since it is the result of all the other DOPs added together.
 
 \begin{figure}[!ht]
     \centering
