@@ -6,6 +6,7 @@ load('data/data.mat');
 %% Set initial position estimate
 x0 = [0, 0, 0, 0]';
 x = x0;
+c = 299792458;
 x_log = [];
 dop_log = [];
 
@@ -31,7 +32,7 @@ for t = 1:7200
         % Estimate pseudoranges
         P_hat = sqrt((x(1) - visible_pos(1,:)).^2 + ...
                      (x(2) - visible_pos(2,:)).^2 + ...
-                     (x(3) - visible_pos(3,:)).^2);
+                     (x(3) - visible_pos(3,:)).^2);% +c*x(4)
 
         % Observed minus computed ranges
         P_delta = P_hat - visible_pseudo;
@@ -50,10 +51,11 @@ for t = 1:7200
         % Determine the offset delta_x
         x_delta = inv(G'*inv(R)*G) * G' * inv(R) * P_delta';
         
-        x = x + x_delta;        
+        x(1:3) = x(1:3) + x_delta(1:3);
+        x(4) = x(4) - x_delta(4);
     end
 
-    x_log = [x_log, x(1:3)];
+    x_log = [x_log, x];
 end
 
 %% Transform from ECEF to ENU
@@ -67,8 +69,9 @@ lla_pos = ecef2lla(P0');
                                 lla_pos(1), lla_pos(2), lla_pos(3), wgs84);
 
 %% Plot position error in East, North and Vertical frame
-time_vector = (Tow-Tow(1));
-% 
+time_vector = (Tow-Tow(1))/2;
+
+
 % figure(1);
 % subplot(3,1,1);
 % plot(time_vector, abs(xEast - xP0));
@@ -98,6 +101,8 @@ plot(time_vector, abs(yNorth - yP0));
 plot(time_vector, abs(zUp - zP0));
 grid on;
 legend('East', 'North', 'Up');
+xlabel('Time [s]')
+ylabel('Error [m]')
 saveas(gcf, 'error_pos', 'epsc');
 
 %% Plot the std of the estimated position
@@ -112,10 +117,12 @@ end
 
 figure(3);
 hold on;
-plot(xEast_std);
-plot(yNorth_std);
-plot(zUp_std);
+plot(time_vector, xEast_std);
+plot(time_vector, yNorth_std);
+plot(time_vector, zUp_std);
 grid on;
 legend('East', 'North', 'Up', 'Location','northeastoutside');
+xlabel('Time [s]')
+ylabel('Standard deviation')
 
 saveas(gcf, 'std_pos', 'epsc');
