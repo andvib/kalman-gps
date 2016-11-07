@@ -14,7 +14,7 @@ function [a, omega] = true_acc_vel(t)
         b_1(i+1) = b_1(i) + b_1_dot(i);
     end
     
-    a = a_imu + w_1 + b_1;
+    a = a_imu;% + w_1 + b_1;
     
     %% Angular velocity
     omega_imu = sin(2*t);
@@ -31,6 +31,6 @@ function [a, omega] = true_acc_vel(t)
         b_2(i+1) = b_2(i) + b_2_dot(i);
     end
     
-    omega = omega_imu + w_3 + b_2;
+    omega = omega_imu;% + w_3 + b_2;
 
 end
