@@ -69,8 +69,8 @@ saveas(gcf, 'disc_bias', 'epsc');
 a_sig = a + bias(1,:) + white(1,:);
 omega_sig = omega + bias(2,:) + white(2,:);
 
-states_sig = zeros(3,length(t));
-states_sig = disc_sys(states_sig, [a_sig ; omega_sig], t);
+%states_sig = zeros(3,length(t));
+%states_sig = disc_sys(states_sig, [a_sig ; omega_sig], t);
 
 y_1 = kron(states(1,1:10:end) + vhite(1,1:10:end), ones(1,10));
 y_1 = y_1(1:end-9);
@@ -78,61 +78,71 @@ y_2 = kron(states(3,1:10:end) + vhite(2,1:10:end), ones(1,10));
 y_2 = y_2(1:end-9);
 
 figure(4);
-subplot(4,1,1);
+subplot(2,1,1);
 plot(t, states(1,:), t, y_1);
+ylim([-5 50]);
 xlabel('Time [s]');
 ylabel('Position x [m]');
 legend('True', 'Measured');
 grid on;
-%saveas(gcf, 'position_task3', 'epsc');
 
-subplot(4,1,2);
+subplot(2,1,2);
 plot(t, a, t, a_sig);
 xlabel('Time [s]');
 ylabel('Acceleration a [m/s^2]');
 grid on;
-%saveas(gcf, 'accel_task3', 'epsc');
 
-subplot(4,1,3);
+saveas(gcf, 'acc_pos_task3', 'epsc');
+
+figure(5);
+subplot(2,1,1);
 plot(t, states(3,:), t, y_2);
 xlabel('Time [s]');
 ylabel('Angle \theta [rad]');
 grid on;
-%saveas(gcf, 'orientation_task3', 'epsc');
 
-subplot(4,1,4);
+subplot(2,1,2);
 plot(t, u(2,:), t, omega_sig);
 xlabel('Time [s]');
 ylabel('Angular velocity [rad/s]');
 grid on;
-saveas(gcf, 'angular_vel_task3', 'epsc');
+saveas(gcf, 'angle_task3', 'epsc');
 
 %% Kalman filter
 x_hat = disc_dir_kalman(u, t, white, vhite, [y_1 ; y_2]);
 
-figure(5);
-subplot(5,1,1);
+figure(6);
+subplot(3,1,1);
 plot(t, states(1,:), t, x_hat(1,:));
-legend('True', 'Estimated');
+ylim([0 50]);
+legend('True', 'Estimated','Location','NW');
 title('Position');
 grid on;
 
-subplot(5,1,2);
+subplot(3,1,2);
 plot(t, states(2,:), t, x_hat(2,:));
+ylim([-1 2]);
 title('Velocity');
 grid on;
 
-subplot(5,1,3);
-plot(t, bias(1,:), t, x_hat(3,:));
-title('b_1');
-grid on;
-
-subplot(5,1,4);
+subplot(3,1,3);
 plot(t, states(3,:), t, x_hat(4,:));
+ylim([-1 2]);
 title('Orientation \theta');
 grid on;
 
-subplot(5,1,5);
+saveas(gcf, 'kalman_task4', 'epsc');
+
+figure(7);
+subplot(2,1,1);
+plot(t, bias(1,:), t, x_hat(3,:));
+legend('True', 'Estimated');
+title('b_1');
+grid on;
+
+subplot(2,1,2);
 plot(t, bias(2,:), t, x_hat(5,:));
 title('b_2');
 grid on;
+
+saveas(gcf, 'kalman_bias_task4', 'epsc');

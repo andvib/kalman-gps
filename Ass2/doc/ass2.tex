@@ -197,40 +197,126 @@ The resulting discretized system is:
 
 \begin{figure}[!ht]
     \centering
-    \makebox[\textwidth][c]{\includegraphics[width=1.25\textwidth, keepaspectratio=true]{../src/accel_task3.eps}}
+    \makebox[\textwidth][c]{\includegraphics[width=1.25\textwidth, keepaspectratio=true]{../src/acc_pos_task3.eps}}
     \caption{Measured acceleration.}
     \label{fig:accel_task3}
 \end{figure}
 
 \begin{figure}[!ht]
     \centering
-    \makebox[\textwidth][c]{\includegraphics[width=1.25\textwidth, keepaspectratio=true]{../src/angular_vel_task3.eps}}
-    \caption{The measure angular velocity.}
-    \label{fig:angular_vel_task3}
+    \makebox[\textwidth][c]{\includegraphics[width=1.25\textwidth, keepaspectratio=true]{../src/angle_task3.eps}}
+    \caption{Measured acceleration.}
+    \label{fig:accel_task3}
 \end{figure}
-
-\begin{figure}[!ht]
-    \centering
-    \makebox[\textwidth][c]{\includegraphics[width=1.25\textwidth, keepaspectratio=true]{../src/position_task3.eps}}
-    \caption{The measured position.}
-    \label{fig:pos_task3}
-\end{figure}
-
-\begin{figure}[!ht]
-    \centering
-    \makebox[\textwidth][c]{\includegraphics[width=1.25\textwidth, keepaspectratio=true]{../src/orientation_task3.eps}}
-    \caption{Measured orientation.}
-    \label{fig:orientation_task3}
-\end{figure}
-
 
 \section*{Task 4}
 The Kalman filter consists of several equations, which can be found in table 4.1 in \cite{heftet}.
 
-The design matrices of the Kalman filter, $\bm{Q}$ and $\bm{R}$ are chosen based on knowledge of the variance in the system, and must satisfy the condition
+The states for the Kalman filter are
 
 \begin{equation}
-	\bm{Q}_d(k) = \bm{Q}^T_d(k) > 0, \hspace{5pt} \bm{R}_d(k) = \bm{R}_d(k) > 0.
+	\bm{x} =
+	\begin{bmatrix}
+		x \\ v \\ b_1 \\ \theta \\ b_2
+	\end{bmatrix}
+	, \hspace{5pt} u = 
+	\begin{bmatrix}
+		a \\ \omega
+	\end{bmatrix}
+	, \hspace{5pt} y = 
+	\begin{bmatrix}
+		y_1 \\ y_2
+	\end{bmatrix}
+\end{equation}
+
+The continous Kalman filter can be written as
+
+\begin{equation}
+	\dot{\hat{\bm{x}}} = A\hat{\bm{x}} + \bm{B}\bm{u} + \bm{K}(\bm{y}-\bm{H}\hat{\bm{x}})
+\end{equation}
+
+where
+
+\begin{center}
+\begin{math}
+	\hat{\bm{x}} = 
+	\begin{bmatrix}
+		\hat{x} \\ \hat{v} \\ \hat{b_1} \\ \hat{\theta} \\ \hat{b_2}
+	\end{bmatrix}
+	, \bm{A} = 
+	\begin{bmatrix}
+		0 & 1 & 0 & 0 & 0 \\
+		0 & 0 & 1 & 0 & 0 \\
+		0 & 0 & -\frac{1}{T_1} & 0 & 0 \\
+		0 & 0 & 0 & 0 & 1 \\
+		0 & 0 & 0 & 0 & -\frac{1}{T_2}
+	\end{bmatrix}
+\end{math}
+\begin{math}
+	\bm{B} = 
+	\begin{bmatrix}
+		0 & 0 \\
+		1 & 0 \\
+		0 & 0 \\
+		0 & 1 \\
+		0 & 0
+	\end{bmatrix}
+	, \bm{H} = 
+	\begin{bmatrix}
+		1 & 0 & 0 & 0 & 0 \\
+		0 & 0 & 0 & 1 & 0
+	\end{bmatrix}
+\end{math}
+\end{center}
+
+When the system is discretized it will take the form
+
+\begin{subequations}
+\begin{equation}
+	x(k+1) = \bm{\Phi}(k) \bm{x}(k) + \bm{\Updelta}(k) \bm{u}(k) + \bm{\Gamma}\bm{w}(k)
+\end{equation}
+\begin{equation}
+	y(k) = \bm{H}(k)\bm{x}(k)+\bm{v}(k)
+\end{equation}
+\end{subequations}
+
+Which gives
+
+\begin{subequations}
+\begin{equation}
+	\bm{\Phi} = I + h\bm{A}(t_k)
+\end{equation}
+\begin{equation}
+	\bm{\Updelta}(k) = h\bm{B}(t_k)
+\end{equation}
+\begin{equation}
+	\bm{\Gamma}(k) = \bm{E}
+\end{equation}
+\end{subequations}
+
+The design matrices of the Kalman filter, $\bm{Q}$ and $\bm{R}$, are chosen based on knowledge about the noise that is present in the system, namely the variance of the process noise and the measurement noise:
+
+\begin{equation}
+	\bm{Q}_d(k) = 
+	\begin{bmatrix}
+		Var(w_1) & 0 & 0 & 0 \\
+		0 & Var(w_2) & 0 & 0 \\
+		0 & 0 & Var(w_3) & 0 \\
+		0 & 0 & 0 & Var(w_4)
+	\end{bmatrix}
+	, \hspace{5pt} \bm{R}_d(k) = 
+	\begin{bmatrix}
+		Var(v_1) & 0 \\
+		0 & Var(v_2)
+	\end{bmatrix}.
+\end{equation}
+
+And they are discretized
+
+\begin{equation}
+	\bm{Q}_d = h\bm{Q}
+	, \hspace{5pt}
+	\bm{R}_d = \frac{1}{h}
 \end{equation}
 
 The initial condistions of the filter are chose as
@@ -273,7 +359,20 @@ The propagation of the system is updated in both the state estimation and the er
 \end{equation}
 \end{subequations}
 
-	
+\begin{figure}[!ht]
+    \centering
+    \makebox[\textwidth][c]{\includegraphics[width=1.25\textwidth, keepaspectratio=true]{../src/kalman_task4.eps}}
+    \caption{Measured acceleration.}
+    \label{fig:accel_task3}
+\end{figure}
+
+\begin{figure}[!ht]
+    \centering
+    \makebox[\textwidth][c]{\includegraphics[width=1.25\textwidth, keepaspectratio=true]{../src/kalman_bias_task4.eps}}
+    \caption{Measured acceleration.}
+    \label{fig:accel_task3}
+\end{figure}
+
 
 \newpage
 \addcontentsline{toc}{chapter}{References}
