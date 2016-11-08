@@ -5,6 +5,7 @@
 \usepackage{parskip}
 \usepackage{datetime}
 \usepackage{amsmath, bm}
+\usepackage{upgreek}
 
 \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
 
@@ -222,6 +223,57 @@ The resulting discretized system is:
     \label{fig:orientation_task3}
 \end{figure}
 
+
+\section*{Task 4}
+The Kalman filter consists of several equations, which can be found in table 4.1 in \cite{heftet}.
+
+The design matrices of the Kalman filter, $\bm{Q}$ and $\bm{R}$ are chosen based on knowledge of the variance in the system, and must satisfy the condition
+
+\begin{equation}
+	\bm{Q}_d(k) = \bm{Q}^T_d(k) > 0, \hspace{5pt} \bm{R}_d(k) = \bm{R}_d(k) > 0.
+\end{equation}
+
+The initial condistions of the filter are chose as
+
+\begin{subequations}
+\begin{equation}
+	\bar{\bm{x}}(0) = \bm{x}_0
+\end{equation}
+\begin{equation}
+	\bar{\bm{P}}(0) = E[(\bm{x}(0)-\hat{\bm{x}}(0))(\bm{x}(0)-\hat{\bm{x}}(0))^T] = \bm{P}_0.
+\end{equation}
+\end{subequations}
+	
+The Kalman gain matrix is calculated by
+
+\begin{equation}
+	\bm{K}(k) = \bar{\bm{P}}(k)\bm{H}^T(k)[\bm{H}(k)\bar{\bm{P}}(k)\bm{H}^T(k) + \bm{R}_d(k)]^{-1}
+\end{equation}
+
+and the state estimation performed at every timestep is defined as
+
+\begin{equation}
+	\hat{\bm{x}}(k) = \bar{\bm{x}}(k) + \bm{K}(k)[\bm{y}(k)-\bm{H}(k)\bar{\bm{x}}(k)].
+\end{equation}
+	
+The error covariance update is defined as
+
+\begin{equation}
+	\hat{\bm{P}}(k) = [\bm{I}-\bm{K}(k)\bm{H}(k)]\bar{\bm{P}}(k)[\bm{I}-\bm{K}(k)\bm{H}(k)]^T+\bm{K}(k)\bm{R}_d(k)\bm{K}^T(k).
+\end{equation}
+	
+The propagation of the system is updated in both the state estimation and the error covariance
+
+\begin{subequations}
+\begin{equation}
+	\bar{\bm{x}}(k+1) = \bm{\Phi}(k)+\hat{\bm{x}}(k)+\Updelta(k)\bm{u}(k)
+\end{equation}
+\begin{equation}
+	\bar{\bm{P}}(k+1) = \bm{\Phi}(k)\hat{\bm{P}}(k)\bm{\Phi}^T(k)+\bm{\Gamma}(k)\bm{Q}_d(k)\bm{\Gamma}^T(k).
+\end{equation}
+\end{subequations}
+
+	
 
 \newpage
 \addcontentsline{toc}{chapter}{References}
