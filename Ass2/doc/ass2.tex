@@ -198,15 +198,13 @@ The resulting discretized system is:
 \begin{figure}[!ht]
     \centering
     \makebox[\textwidth][c]{\includegraphics[width=1.25\textwidth, keepaspectratio=true]{../src/acc_pos_task3.eps}}
-    \caption{Measured acceleration.}
-    \label{fig:accel_task3}
+    \caption{Measured position and acceleration.}
 \end{figure}
 
 \begin{figure}[!ht]
     \centering
     \makebox[\textwidth][c]{\includegraphics[width=1.25\textwidth, keepaspectratio=true]{../src/angle_task3.eps}}
-    \caption{Measured acceleration.}
-    \label{fig:accel_task3}
+    \caption{Measured orientation angle and angular velocity.}
 \end{figure}
 
 \section*{Task 4}
@@ -232,7 +230,7 @@ The states for the Kalman filter are
 The continous Kalman filter can be written as
 
 \begin{equation}
-	\dot{\hat{\bm{x}}} = A\hat{\bm{x}} + \bm{B}\bm{u} + \bm{K}(\bm{y}-\bm{H}\hat{\bm{x}})
+	\dot{\hat{\bm{x}}} = \bm{A}\hat{\bm{x}} + \bm{B}\bm{u} + \bm{K}(\bm{y}-\bm{H}\hat{\bm{x}})
 \end{equation}
 
 where
@@ -319,7 +317,7 @@ And they are discretized
 	\bm{R}_d = \frac{1}{h}
 \end{equation}
 
-The initial condistions of the filter are chose as
+The initial condistions of the filter are chosen as
 
 \begin{subequations}
 \begin{equation}
@@ -362,17 +360,72 @@ The propagation of the system is updated in both the state estimation and the er
 \begin{figure}[!ht]
     \centering
     \makebox[\textwidth][c]{\includegraphics[width=1.25\textwidth, keepaspectratio=true]{../src/kalman_task4.eps}}
-    \caption{Measured acceleration.}
-    \label{fig:accel_task3}
+    \caption{The estimated states.}
 \end{figure}
 
 \begin{figure}[!ht]
     \centering
     \makebox[\textwidth][c]{\includegraphics[width=1.25\textwidth, keepaspectratio=true]{../src/kalman_bias_task4.eps}}
-    \caption{Measured acceleration.}
-    \label{fig:accel_task3}
+    \caption{Estimated bias.}
 \end{figure}
 
+
+\section*{Task 5}
+The difference between a direct and an indirect Kalman filter is that an indirect filter estimates the error of the measurements based on an error model. The error model for the three states $x$, $v$ and $\theta$ will in this case be \cite{heftet}:
+
+\begin{subequations}
+\begin{equation}
+	\delta\dot{x} = \delta v
+\end{equation}
+\begin{equation}
+	\delta\dot{v} = b_1 + w_1
+\end{equation}
+\begin{equation}
+	\dot{b_1} = -\frac{1}{T_1}b_1 + w_2
+\end{equation}
+\begin{equation}
+	\delta\dot{\theta} = b_2 + w_3
+\end{equation}
+\begin{equation}
+	\dot{b_2} = -\frac{1}{T_2}b_2 + w_4
+\end{equation}
+\end{subequations}
+
+These error models will together form the following states for the Kalman filter
+
+\begin{equation}
+	\hat{\bm{x}} =
+	\begin{bmatrix}
+		\delta\hat{x} \\ \delta\hat{v} \\ \hat{b_1} \\ \delta\hat{\theta} \\ \hat{b_2}
+	\end{bmatrix}
+	, \hspace{5pt}
+	\bm{y} = 
+	\begin{bmatrix}
+		x_{GPS} - x_{INS} + v_1 \\
+		\theta_{GPS} - \theta_{INS} + v_2
+	\end{bmatrix}
+\end{equation}
+
+which together will form the Kalman equation
+
+\begin{equation}
+	\dot{\hat{\bm{x}}} = \bm{\Phi}\hat{\bm{x}} + \bm{K}(\bm{y} - \bm{H}\hat{\bm{x}})
+\end{equation}
+
+The $\Phi$, $\bm{\Updelta}$, $\bm{H}$ and $\bm{\Gamma}$ matrices will stay the same as in the previous task, as will the design matrices $\bm{Q}$ and $\bm{R}$.
+	
+\begin{figure}[!ht]
+    \centering
+    \makebox[\textwidth][c]{\includegraphics[width=1.25\textwidth, keepaspectratio=true]{../src/kalman_task5.eps}}
+    \caption{The estimated states}
+\end{figure}
+
+\begin{figure}[!ht]
+    \centering
+    \makebox[\textwidth][c]{\includegraphics[width=1.25\textwidth, keepaspectratio=true]{../src/kalman_bias_task5.eps}}
+    \caption{Estimated bias.}
+\end{figure}
+	
 
 \newpage
 \addcontentsline{toc}{chapter}{References}

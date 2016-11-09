@@ -1,4 +1,4 @@
-function x_hat = disc_dir_kalman(u, t, w, v, y)
+function x_hat = indir_kalman(u, t, w, v, y)
     global T_1 T_2;
     
     %% Create matrices
@@ -23,7 +23,7 @@ function x_hat = disc_dir_kalman(u, t, w, v, y)
              [0 1 0 0];
              [0 0 1 0];
              [0 0 0 1]];
-    
+         
     %% Create design matrices
     Q = h * diag([var(w(1,:)), var(w(2,:)), var(w(3,:)), var(w(4,:))]);
     R = (1/h) * diag([var(v(1,:)), var(v(2,:))]);
@@ -35,7 +35,8 @@ function x_hat = disc_dir_kalman(u, t, w, v, y)
     x_hat = zeros(5, length(t));
     
     P_bar = eye(5);
-    P_bar(1,1) = 0;
+    P_bar(1,1) = 0; 
+    
     %% Main loop
     for i = 1:length(t)-1
         % Calculate Kalman gain matrix
@@ -53,4 +54,7 @@ function x_hat = disc_dir_kalman(u, t, w, v, y)
         % Error covariance propagation
         P_bar = Phi*P_hat*Phi' + Gamma*Q*Gamma';
     end
+    
+    
+    
 end
